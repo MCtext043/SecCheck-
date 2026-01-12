@@ -41,7 +41,12 @@ document.getElementById('checkForm').addEventListener('submit', async (e) => {
         if (data.success) {
             displayResults(data);
         } else {
-            showError(data.error || 'Произошла ошибка при проверке сайта');
+            // Проверяем, является ли это ошибкой доступности
+            if (response.status === 404 || data.error?.includes('не найден') || data.error?.includes('недоступен')) {
+                showError(`❌ Сайт недоступен: ${data.error || 'Страница не существует'}. Проверьте правильность URL и убедитесь, что сайт доступен.`);
+            } else {
+                showError(data.error || 'Произошла ошибка при проверке сайта');
+            }
         }
     } catch (error) {
         showError('Ошибка соединения с сервером: ' + error.message);
@@ -96,6 +101,11 @@ function updateScore(data) {
     const offset = circumference - (data.percentage / 100) * circumference;
     scoreRing.style.strokeDashoffset = offset;
     
+    // Вычисляем цвет на основе процента (плавный переход от красного к зеленому)
+    const color = getColorByPercentage(data.percentage);
+    scoreRing.style.stroke = color.ring;
+    scoreCircle.style.background = color.circle;
+    
     // Обновляем уровень
     const levelTexts = {
         'excellent': '🟢 Отличный уровень безопасности',
@@ -113,18 +123,52 @@ function updateScore(data) {
     
     levelText.textContent = levelTexts[data.level] || levelTexts['low'];
     levelDescription.textContent = descriptions[data.level] || descriptions['low'];
+}
+
+// Функция для плавного перехода цвета от красного к зеленому
+function getColorByPercentage(percentage) {
+    // Нормализуем процент от 0 до 1
+    const normalized = Math.max(0, Math.min(100, percentage)) / 100;
     
-    // Обновляем цвет круга и кольца
-    const colors = {
-        'excellent': { circle: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', ring: '#10b981' },
-        'good': { circle: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', ring: '#f59e0b' },
-        'satisfactory': { circle: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)', ring: '#f97316' },
-        'low': { circle: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', ring: '#ef4444' }
+    // Интерполируем между красным и зеленым
+    // Красный: rgb(239, 68, 68) = #ef4444
+    // Желтый: rgb(245, 158, 11) = #f59e0b (при 50%)
+    // Зеленый: rgb(16, 185, 129) = #10b981
+    
+    let r, g, b;
+    
+    if (normalized < 0.5) {
+        // От красного к желтому (0% - 50%)
+        const t = normalized * 2; // 0-1 в диапазоне 0-50%
+        r = Math.round(239 + (245 - 239) * t);
+        g = Math.round(68 + (158 - 68) * t);
+        b = Math.round(68 + (11 - 68) * t);
+    } else {
+        // От желтого к зеленому (50% - 100%)
+        const t = (normalized - 0.5) * 2; // 0-1 в диапазоне 50-100%
+        r = Math.round(245 + (16 - 245) * t);
+        g = Math.round(158 + (185 - 158) * t);
+        b = Math.round(11 + (129 - 11) * t);
+    }
+    
+    const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    
+    // Создаем градиент для круга
+    const gradient = `linear-gradient(135deg, ${hexColor} 0%, ${darkenColor(hexColor, 10)} 100%)`;
+    
+    return {
+        ring: hexColor,
+        circle: gradient
     };
-    
-    const colorScheme = colors[data.level] || colors['low'];
-    scoreCircle.style.background = colorScheme.circle;
-    scoreRing.style.stroke = colorScheme.ring;
+}
+
+// Функция для затемнения цвета
+function darkenColor(hex, percent) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.max(0, Math.min(255, (num >> 16) - percent));
+    const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) - percent));
+    const b = Math.max(0, Math.min(255, (num & 0x0000FF) - percent));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
 }
 
 function animateScore(targetScore, element) {

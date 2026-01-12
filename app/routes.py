@@ -44,6 +44,27 @@ def check_security():
         # Преобразуем в словарь для JSON
         result = report.to_dict()
         
+        # Проверяем, есть ли ошибка доступности
+        has_access_error = any(
+            check.get('name') == 'Доступность сайта' and 
+            check.get('status') == 'danger' 
+            for check in result.get('checks', [])
+        )
+        
+        if has_access_error:
+            # Если сайт недоступен, возвращаем ошибку
+            error_check = next(
+                (check for check in result['checks'] if check.get('name') == 'Доступность сайта'),
+                None
+            )
+            error_message = error_check.get('message', 'Сайт недоступен') if error_check else 'Сайт недоступен'
+            
+            return jsonify({
+                'success': False,
+                'error': error_message,
+                'url': normalized_url
+            }), 404
+        
         # Добавляем дополнительную информацию
         level, emoji, color_class = calculate_level(report.percentage)
         result['level'] = level

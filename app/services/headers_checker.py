@@ -84,10 +84,24 @@ class HeadersChecker(BaseChecker):
                     details={'header_value': value}
                 ))
             else:
+                # Более мягкая оценка: даем частичные баллы за отсутствующие заголовки
+                # Критичные заголовки (HSTS, CSP) - 20% от веса
+                # Важные заголовки (X-Frame-Options, X-Content-Type-Options) - 40% от веса
+                # Остальные - 50% от веса
+                critical_headers = ['Принудительное использование HTTPS (HSTS)', 'Политика безопасности контента (CSP)']
+                important_headers = ['Защита от встраивания (X-Frame-Options)', 'Защита от подмены типа файлов']
+                
+                if name in critical_headers:
+                    partial_score = config['weight'] * 0.2
+                elif name in important_headers:
+                    partial_score = config['weight'] * 0.4
+                else:
+                    partial_score = config['weight'] * 0.5
+                
                 results.append(CheckResult(
                     name=name,
                     status='warning',
-                    score=0.0,
+                    score=partial_score,
                     max_score=config['weight'],
                     message='Отсутствует',
                     category=config['category'],

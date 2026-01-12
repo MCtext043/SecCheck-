@@ -53,10 +53,11 @@ class ContentChecker(BaseChecker):
         except:
             pass
         
+        # Более мягкая оценка: даем 80% баллов даже если файл не найден
         return CheckResult(
             name='Файл robots.txt',
             status='info',
-            score=1.0,
+            score=1.6,
             max_score=2.0,
             message='Файл robots.txt не найден (не критично)',
             category='content'
@@ -80,10 +81,11 @@ class ContentChecker(BaseChecker):
                 category='content'
             )
         
+        # Более мягкая оценка: даем 50% баллов даже без upgrade-insecure-requests
         return CheckResult(
             name='Защита от смешанного контента',
             status='warning',
-            score=1.0,
+            score=1.5,
             max_score=3.0,
             message='Рекомендуется добавить upgrade-insecure-requests в CSP',
             category='content'

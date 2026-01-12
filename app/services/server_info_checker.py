@@ -21,10 +21,11 @@ class ServerInfoChecker(BaseChecker):
             server_info.append(f"X-Powered-By: {self.headers['x-powered-by']}")
         
         if server_info:
+            # Более мягкая оценка: даем 60% баллов даже при раскрытии информации
             return [CheckResult(
                 name='Скрытие информации о сервере',
                 status='warning',
-                score=5.0,
+                score=6.0,
                 max_score=10.0,
                 message=f'Обнаружена информация: {", ".join(server_info)}',
                 category='server',

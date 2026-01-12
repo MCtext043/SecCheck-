@@ -47,7 +47,7 @@
                             type="text" 
                             class="search-input" 
                             id="urlInput" 
-                            placeholder="Введите URL сайта (например: github.com)"
+                            placeholder="Введите URL сайта (например: github.com или https://github.com)"
                             required
                         >
                         <button class="search-button" type="submit" id="checkButton">
@@ -56,6 +56,13 @@
                             </span>
                             <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                         </button>
+                    </div>
+                    <div class="url-format-hint mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i> 
+                            <strong>Формат URL:</strong> Можно вводить с протоколом (https://site.com) или без него (site.com). 
+                            Программа автоматически добавит https:// если протокол не указан.
+                        </small>
                     </div>
                 </form>
             </div>

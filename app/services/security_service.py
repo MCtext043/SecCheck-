@@ -1,7 +1,7 @@
 """
 Главный сервис для проверки безопасности
 """
-from typing import List
+from typing import List, Optional
 from app.models.security_result import CheckResult, SecurityReport
 from app.services.connection_checker import ConnectionChecker
 from app.services.headers_checker import HeadersChecker
@@ -9,6 +9,7 @@ from app.services.server_info_checker import ServerInfoChecker
 from app.services.cookies_checker import CookiesChecker
 from app.services.content_checker import ContentChecker
 from app.utils.score_calculator import create_report
+from app.utils.url_validator import check_url_exists
 
 
 class SecurityService:
@@ -31,6 +32,27 @@ class SecurityService:
         Returns:
             SecurityReport с результатами
         """
+        # Сначала проверяем существование URL
+        exists, status_code, error_message = check_url_exists(self.url)
+        
+        if not exists:
+            # Если страница не существует, возвращаем отчет с ошибкой
+            error_check = CheckResult(
+                name='Доступность сайта',
+                status='danger',
+                score=0.0,
+                max_score=0.0,
+                message=error_message,
+                category='general',
+                details={'error': True, 'status_code': status_code}
+            )
+            
+            return create_report(
+                self.url,
+                [error_check],
+                [f'❌ Сайт недоступен: {error_message}. Проверьте правильность URL и доступность сайта.']
+            )
+        
         all_checks = []
         recommendations = []
         
