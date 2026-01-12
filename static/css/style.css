@@ -186,6 +186,127 @@ body {
     margin-right: 0.25rem;
 }
 
+/* Info button styles */
+.info-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.info-button:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+    transform: scale(1.1);
+}
+
+.info-button:focus {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    outline: none;
+}
+
+/* Modal styles - центрированное окно с затемненным фоном */
+#explanationModal .modal-dialog {
+    max-width: 800px;
+    margin: 1.75rem auto;
+}
+
+#explanationModal .modal-content {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: var(--shadow-xl);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#explanationModal .modal-header {
+    background: var(--gradient-primary);
+    color: white;
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    border-radius: 1rem 1rem 0 0;
+    flex-shrink: 0;
+}
+
+#explanationModal .modal-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+#explanationModal .btn-close {
+    filter: invert(1);
+    opacity: 0.9;
+    font-size: 1.25rem;
+}
+
+#explanationModal .btn-close:hover {
+    opacity: 1;
+}
+
+#explanationModal .modal-body {
+    padding: 2.5rem;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    overflow-y: auto;
+    flex: 1;
+    background: var(--bg-secondary);
+}
+
+#explanationModal .modal-footer {
+    border-top: 2px solid var(--border);
+    padding: 1.5rem 2rem;
+    flex-shrink: 0;
+    background: var(--bg-secondary);
+    border-radius: 0 0 1rem 1rem;
+}
+
+.explanation-content {
+    margin: 0;
+}
+
+.explanation-content p {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+/* Затемнение фона (backdrop) */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+}
+
+.modal-backdrop.show {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    #explanationModal .modal-dialog {
+        max-width: 95%;
+        margin: 1rem auto;
+    }
+    
+    #explanationModal .modal-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    #explanationModal .modal-title {
+        font-size: 1.5rem;
+    }
+    
+    #explanationModal .modal-body {
+        padding: 1.5rem;
+        font-size: 1.05rem;
+        line-height: 1.7;
+    }
+    
+    #explanationModal .modal-footer {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
 .search-button {
     background: var(--gradient-primary);
     color: white;

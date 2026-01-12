@@ -108,10 +108,10 @@ function updateScore(data) {
     
     // Обновляем уровень
     const levelTexts = {
-        'excellent': '🟢 Отличный уровень безопасности',
-        'good': '🟡 Хороший уровень безопасности',
-        'satisfactory': '🟠 Удовлетворительный уровень',
-        'low': '🔴 Низкий уровень безопасности'
+        'excellent': 'Отличный уровень безопасности',
+        'good': 'Хороший уровень безопасности',
+        'satisfactory': 'Удовлетворительный уровень',
+        'low': 'Низкий уровень безопасности'
     };
     
     const descriptions = {
@@ -370,40 +370,90 @@ function displayChecks(checks) {
 
 function createCheckItem(check) {
     const item = document.createElement('div');
-    item.className = `check-item p-3 mb-3 rounded ${check.status}`;
+    item.className = `check-item ${check.status}`;
     
     const statusIcons = {
-        'success': '<i class="bi bi-check-circle-fill text-success"></i>',
-        'warning': '<i class="bi bi-exclamation-triangle-fill text-warning"></i>',
-        'danger': '<i class="bi bi-x-circle-fill text-danger"></i>',
-        'info': '<i class="bi bi-info-circle-fill text-info"></i>'
+        'success': '<i class="bi bi-check-circle-fill" style="color: var(--success); font-size: 1.25rem;"></i>',
+        'warning': '<i class="bi bi-exclamation-triangle-fill" style="color: var(--warning); font-size: 1.25rem;"></i>',
+        'danger': '<i class="bi bi-x-circle-fill" style="color: var(--danger); font-size: 1.25rem;"></i>',
+        'info': '<i class="bi bi-info-circle-fill" style="color: var(--info); font-size: 1.25rem;"></i>'
     };
     
     const statusBadges = {
-        'success': '<span class="status-badge status-success">Успешно</span>',
-        'warning': '<span class="status-badge status-warning">Предупреждение</span>',
-        'danger': '<span class="status-badge status-danger">Опасность</span>',
-        'info': '<span class="status-badge status-info">Информация</span>'
+        'success': '<span class="badge" style="background: var(--success); color: white;">Успешно</span>',
+        'warning': '<span class="badge" style="background: var(--warning); color: #000;">Предупреждение</span>',
+        'danger': '<span class="badge" style="background: var(--danger); color: white;">Опасность</span>',
+        'info': '<span class="badge" style="background: var(--info); color: white;">Информация</span>'
     };
     
     const scoreText = check.score > 0 
-        ? `<span class="badge bg-primary ms-2">+${check.score.toFixed(1)}</span>`
+        ? `<span class="badge" style="background: var(--primary); color: white; margin-left: 0.5rem;">+${check.score.toFixed(1)}</span>`
         : '';
     
+    // Получаем объяснение для проблемных проверок
+    const explanation = (check.status === 'warning' || check.status === 'danger') 
+        ? getCheckExplanation(check.name) 
+        : null;
+    
+    // Создаем кнопку с подсказкой, если есть объяснение
+    let infoButton = '';
+    if (explanation) {
+        const infoButtonId = `info-${check.name.replace(/\s+/g, '-').replace(/[()]/g, '').toLowerCase()}`;
+        infoButton = `
+            <button 
+                type="button" 
+                class="btn btn-sm btn-link p-0 ms-2 info-button" 
+                id="${infoButtonId}"
+                style="color: var(--primary); text-decoration: none;"
+            >
+                <i class="bi bi-question-circle-fill" style="font-size: 1rem;"></i>
+            </button>
+        `;
+    }
+    
     item.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start">
-            <div class="flex-grow-1">
-                <h6 class="mb-2">
-                    ${statusIcons[check.status] || ''} ${check.name}
+        <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+            <div style="flex: 1;">
+                <h6 style="margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    ${statusIcons[check.status] || ''} 
+                    <span>${check.name}</span>
+                    ${infoButton}
                     ${scoreText}
                 </h6>
-                <p class="mb-0 text-muted">${check.message}</p>
+                <p style="margin: 0; color: var(--text-secondary);">${check.message}</p>
             </div>
             <div>
                 ${statusBadges[check.status] || ''}
             </div>
         </div>
     `;
+    
+    // Инициализируем модальное окно после добавления элемента в DOM
+    if (explanation) {
+        setTimeout(() => {
+            const infoButtonId = `info-${check.name.replace(/\s+/g, '-').replace(/[()]/g, '').toLowerCase()}`;
+            const button = document.getElementById(infoButtonId);
+            if (button) {
+                button.addEventListener('click', () => {
+                    // Устанавливаем заголовок модального окна
+                    document.getElementById('explanationModalLabel').textContent = explanation.title;
+                    
+                    // Устанавливаем содержимое модального окна
+                    document.getElementById('explanationModalBody').innerHTML = `
+                        <div class="explanation-content">
+                            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-primary);">
+                                ${explanation.description}
+                            </p>
+                        </div>
+                    `;
+                    
+                    // Показываем модальное окно
+                    const modal = new bootstrap.Modal(document.getElementById('explanationModal'));
+                    modal.show();
+                });
+            }
+        }, 100);
+    }
     
     return item;
 }
