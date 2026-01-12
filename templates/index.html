@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Анализатор безопасности веб-сайтов</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar-custom">
+        <div class="container">
+            <div class="navbar-content">
+                <div class="navbar-brand-custom">
+                    <i class="bi bi-shield-check-fill"></i>
+                    <span>Анализатор безопасности</span>
+                </div>
+                <div class="navbar-subtitle">Проверка безопасности веб-сайтов</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section text-center mb-5">
+                <h1 class="hero-title">Проверьте безопасность вашего сайта</h1>
+                <p class="hero-subtitle">Получите детальный анализ безопасности за несколько секунд</p>
+            </div>
+
+            <!-- Search Form -->
+            <div class="search-card">
+                <form id="checkForm">
+                    <div class="search-wrapper">
+                        <div class="search-icon">
+                            <i class="bi bi-globe"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="urlInput" 
+                            placeholder="Введите URL сайта (например: github.com)"
+                            required
+                        >
+                        <button class="search-button" type="submit" id="checkButton">
+                            <span class="button-text">
+                                <i class="bi bi-search"></i> Проверить
+                            </span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="d-none results-wrapper">
+            <!-- Score Card -->
+            <div class="score-card">
+                <div class="score-content">
+                    <div class="score-visual">
+                        <div class="score-circle-wrapper" id="scoreCircleWrapper">
+                            <svg class="score-ring" viewBox="0 0 200 200">
+                                <circle class="score-ring-bg" cx="100" cy="100" r="90"></circle>
+                                <circle class="score-ring-progress" cx="100" cy="100" r="90" id="scoreRing"></circle>
+                            </svg>
+                            <div class="score-circle" id="scoreCircle">
+                                <div class="score-value" id="scoreValue">0</div>
+                                <div class="score-label">из 100</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="score-info">
+                        <h2 class="score-level" id="levelText">-</h2>
+                        <p class="score-description" id="levelDescription">-</p>
+                        <div class="score-meta">
+                            <i class="bi bi-clock"></i>
+                            <span>Проверено: <span id="checkTime"></span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        <h5>Оценка по категориям</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <i class="bi bi-pie-chart-fill"></i>
+                        <h5>Распределение проверок</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checks Results -->
+            <div class="results-card">
+                <div class="card-header-custom">
+                    <i class="bi bi-list-check"></i>
+                    <h5>Детальные результаты проверки</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="accordion" id="checksAccordion">
+                        <!-- Checks will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendations-card" id="recommendationsCard">
+                <div class="card-header-custom">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    <h5>Рекомендации по улучшению</h5>
+                </div>
+                <div class="card-body-custom">
+                    <ul class="recommendations-list" id="recommendationsList">
+                        <!-- Recommendations will be inserted here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Container -->
+        <div class="error-alert d-none" id="errorContainer" role="alert">
+            <div class="error-content">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span id="errorMessage"></span>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Проверяет: HTTPS, SSL сертификат, защитные заголовки, cookies и многое другое</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
+
