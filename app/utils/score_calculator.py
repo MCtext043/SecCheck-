@@ -78,7 +78,7 @@ def create_report(url: str, checks: List[CheckResult], recommendations: List[str
     percentage = (total_score / max_score * 100) if max_score > 0 else 0
     
     # Определяем уровень
-    level, _, _ = calculate_level(percentage)
+    level, _ = calculate_level(percentage)
     
     # Рассчитываем оценки по категориям
     categories = calculate_category_scores(checks)
