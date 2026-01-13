@@ -1,7 +1,7 @@
 """
 Главный сервис для проверки безопасности
 """
-from typing import List, Optional
+from typing import List
 from app.models.security_result import CheckResult, SecurityReport
 from app.services.connection_checker import ConnectionChecker
 from app.services.headers_checker import HeadersChecker

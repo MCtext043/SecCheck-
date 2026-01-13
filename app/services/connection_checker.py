@@ -100,3 +100,4 @@ class ConnectionChecker(BaseChecker):
                 details={'error': str(e)}
             )
 
+

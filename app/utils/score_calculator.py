@@ -13,16 +13,16 @@ def calculate_level(percentage: float) -> tuple:
         percentage: Процент безопасности (0-100)
         
     Returns:
-        Кортеж (level, emoji, color_class)
+        Кортеж (level, color_class)
     """
     if percentage >= 90:
-        return ('excellent', '🟢', 'success')
+        return ('excellent', 'success')
     elif percentage >= 75:
-        return ('good', '🟡', 'warning')
+        return ('good', 'warning')
     elif percentage >= 60:
-        return ('satisfactory', '🟠', 'info')
+        return ('satisfactory', 'info')
     else:
-        return ('low', '🔴', 'danger')
+        return ('low', 'danger')
 
 
 def calculate_category_scores(checks: List[CheckResult]) -> dict:
@@ -94,4 +94,5 @@ def create_report(url: str, checks: List[CheckResult], recommendations: List[str
         recommendations=recommendations,
         categories=categories
     )
+
 

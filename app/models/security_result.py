@@ -56,3 +56,4 @@ class SecurityReport:
             'categories': {k: round(v, 1) for k, v in self.categories.items()}
         }
 
+

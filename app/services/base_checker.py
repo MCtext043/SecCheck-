@@ -3,7 +3,7 @@
 """
 import requests
 import warnings
-from typing import Dict, List
+from typing import List
 from app.models.security_result import CheckResult
 
 # Игнорируем предупреждения о небезопасных SSL запросах

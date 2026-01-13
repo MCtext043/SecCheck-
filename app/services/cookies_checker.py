@@ -104,3 +104,4 @@ class CookiesChecker(BaseChecker):
             }
         )]
 
+

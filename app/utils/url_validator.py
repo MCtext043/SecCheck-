@@ -3,7 +3,6 @@
 """
 import requests
 import warnings
-from urllib.parse import urlparse
 
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 

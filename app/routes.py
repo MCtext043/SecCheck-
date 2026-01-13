@@ -66,9 +66,8 @@ def check_security():
             }), 404
         
         # Добавляем дополнительную информацию
-        level, emoji, color_class = calculate_level(report.percentage)
+        level, color_class = calculate_level(report.percentage)
         result['level'] = level
-        result['emoji'] = emoji
         result['color_class'] = color_class
         result['success'] = True
         
