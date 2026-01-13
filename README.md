@@ -21,6 +21,11 @@ python app.py
 http://localhost:5000
 ```
 
+4. Swagger документация доступна по адресу:
+```
+http://localhost:5000/api/docs
+```
+
 
 
 ## ✨ Возможности
@@ -155,51 +160,208 @@ INF_BEZ_2/
 - `score_calculator.py`: Расчет оценок
 
 
-### API
+## 📡 API Документация
 
-**POST /api/check**
+### Swagger UI
 
-Запрос:
+Интерактивная документация API доступна по адресу:
+```
+http://localhost:5000/api/docs
+```
+
+### Endpoints
+
+#### 1. POST /api/check
+Проверка безопасности одного сайта
+
+**Запрос:**
 ```json
 {
   "url": "github.com"
 }
 ```
 
-Ответ:
+**Ответ (успех):**
 ```json
 {
   "success": true,
   "url": "https://github.com",
-  "score": 75.5,
+  "score": 85.5,
   "max_score": 106.0,
-  "percentage": 71.2,
+  "percentage": 80.66,
   "level": "good",
   "color_class": "warning",
-  "checks": [...],
-  "recommendations": [...],
-  "categories": {...}
+  "checks": [
+    {
+      "name": "Защищенное соединение (HTTPS)",
+      "status": "success",
+      "score": 15.0,
+      "max_score": 15.0,
+      "message": "HTTPS используется",
+      "category": "connection"
+    }
+  ],
+  "recommendations": [
+    "Настройте принудительное использование защищенного соединения"
+  ],
+  "categories": {
+    "connection": 100.0,
+    "headers": 75.5,
+    "server": 100.0,
+    "cookies": 66.7,
+    "content": 83.3
+  }
 }
 ```
 
-## 💡 Идеи для расширения
+**Ответ (ошибка):**
+```json
+{
+  "success": false,
+  "error": "Сайт недоступен: Страница не найдена (404)"
+}
+```
 
-### Дополнительные проверки
-- Проверка DNS безопасности (DNSSEC, SPF, DMARC)
-- Сканирование открытых портов
-- Проверка на известные уязвимости (CVE)
-- Проверка конфигурации сервера
-- Проверка производительности и SEO
-- Проверка доступности (WCAG)
+#### 2. POST /api/check/batch
+Массовая проверка нескольких сайтов (до 10 URL за запрос)
 
-### Новые функции
-- История проверок с графиками
-- Мониторинг и уведомления
-- Сравнение сайтов
-- REST API для разработчиков
-- Экспорт отчетов в PDF/Excel
-- Платные подписки
-- White-label решение
+**Запрос:**
+```json
+{
+  "urls": ["github.com", "google.com", "apple.com"]
+}
+```
+
+**Ответ:**
+```json
+{
+  "success": true,
+  "total": 3,
+  "results": [
+    {
+      "url": "https://github.com",
+      "success": true,
+      "score": 85.5,
+      "max_score": 106.0,
+      "percentage": 80.66,
+      "level": "good",
+      "color_class": "warning"
+    },
+    {
+      "url": "https://google.com",
+      "success": true,
+      "score": 95.0,
+      "max_score": 106.0,
+      "percentage": 89.62,
+      "level": "good",
+      "color_class": "warning"
+    }
+  ]
+}
+```
+
+#### 3. GET /api/checks
+Получить список всех доступных проверок безопасности
+
+**Ответ:**
+```json
+{
+  "success": true,
+  "total": 16,
+  "checks": [
+    {
+      "name": "Защищенное соединение (HTTPS)",
+      "category": "connection",
+      "max_score": 15.0,
+      "description": "Проверка использования HTTPS протокола"
+    },
+    {
+      "name": "SSL сертификат",
+      "category": "connection",
+      "max_score": 10.0,
+      "description": "Проверка валидности и срока действия SSL сертификата"
+    }
+  ]
+}
+```
+
+#### 4. GET /api/info
+Информация об API
+
+**Ответ:**
+```json
+{
+  "name": "Security Checker API",
+  "version": "1.0.0",
+  "description": "REST API для проверки безопасности веб-сайтов",
+  "max_score": 106.0,
+  "endpoints": [
+    {
+      "path": "/api/check",
+      "method": "POST",
+      "description": "Проверка безопасности одного сайта"
+    }
+  ]
+}
+```
+
+#### 5. GET /api/health
+Проверка работоспособности API
+
+**Ответ:**
+```json
+{
+  "status": "ok"
+}
+```
+
+### Примеры использования
+
+**cURL:**
+```bash
+# Проверка одного сайта
+curl -X POST http://localhost:5000/api/check \
+  -H "Content-Type: application/json" \
+  -d '{"url": "github.com"}'
+
+# Массовая проверка
+curl -X POST http://localhost:5000/api/check/batch \
+  -H "Content-Type: application/json" \
+  -d '{"urls": ["github.com", "google.com"]}'
+
+# Список проверок
+curl http://localhost:5000/api/checks
+```
+
+**Python:**
+```python
+import requests
+
+# Проверка одного сайта
+response = requests.post('http://localhost:5000/api/check', 
+                        json={'url': 'github.com'})
+result = response.json()
+print(f"Оценка: {result['percentage']:.2f}%")
+
+# Массовая проверка
+response = requests.post('http://localhost:5000/api/check/batch',
+                        json={'urls': ['github.com', 'google.com']})
+results = response.json()
+for item in results['results']:
+    print(f"{item['url']}: {item['percentage']:.2f}%")
+```
+
+**JavaScript:**
+```javascript
+// Проверка одного сайта
+fetch('http://localhost:5000/api/check', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({url: 'github.com'})
+})
+.then(res => res.json())
+.then(data => console.log(`Оценка: ${data.percentage}%`));
+```
 
 ## 📦 Зависимости
 
@@ -207,6 +369,7 @@ INF_BEZ_2/
 - Flask 3.0+
 - requests 2.31+
 - urllib3 2.0+
+- flasgger 0.9.7+ (для Swagger документации)
 
 ### CDN (подключаются автоматически)
 - Bootstrap 5.3
